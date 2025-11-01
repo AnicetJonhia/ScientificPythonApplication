@@ -1,0 +1,1 @@
+# Package core - fonctions de calcul
