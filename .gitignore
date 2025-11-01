@@ -1,0 +1,59 @@
+# ==========================
+#  .gitignore - CustomTkinter Project
+# ==========================
+
+# --- Fichiers Python ---
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*$py.class
+
+# --- Environnement virtuel ---
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# --- Fichiers de dépendances ---
+pip-log.txt
+pip-delete-this-directory.txt
+
+# --- Fichiers système ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- Logs / temporaires ---
+*.log
+*.tmp
+*.bak
+
+# --- Éditeurs / IDE ---
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# --- Build / Distribution ---
+build/
+dist/
+*.egg-info/
+.eggs/
+MANIFEST
+
+# --- Fichiers d'exécution (si tu compiles en .exe avec pyinstaller) ---
+*.spec
+*.exe
+*.dll
+*.so
+
+# --- Caches divers ---
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/
