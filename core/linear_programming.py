@@ -7,10 +7,28 @@ except Exception:
 
 
 def solve_lp(c: List[float], A: List[List[float]], b: List[float], maximize=True) -> Tuple[dict, float]:
-    """Résout un problème LP simple : max/min c^T x s.t. Ax <= b, x >= 0.
-    Retourne un dictionnaire {i: valeur} et la valeur optimale.
-    Nécessite pulp.
+
+
     """
+    desc:
+        Résout un problème de programmation linéaire (LP) du type :
+        - Maximiser ou minimiser cᵀx
+        - Sous les contraintes Ax ≤ b et x ≥ 0
+        Utilise la bibliothèque PuLP pour la modélisation et la résolution.
+
+    params:
+        c : Liste des coefficients de la fonction objectif (1D).
+        A : Matrice des coefficients des contraintes (2D).
+        b : Liste des bornes supérieures du système de contraintes (1D).
+        maximize : Booléen indiquant s’il faut maximiser (True) ou minimiser (False) la fonction objectif.
+
+    return:
+        Un tuple contenant :
+            - Un dictionnaire associant chaque variable à sa valeur optimale.
+            - La valeur optimale de la fonction objectif.
+    """
+
+    
     if pulp is None:
         raise RuntimeError("PuLP n'est pas installé.")
 

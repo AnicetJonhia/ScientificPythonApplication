@@ -6,10 +6,25 @@ import numpy as np
 
 
 class LinearProgrammingFrame(ctk.CTkFrame):
+    """
+    desc:
+        Interface CustomTkinter permettant de résoudre graphiquement un problème de
+        programmation linéaire à deux variables.  
+        L’utilisateur saisit les coefficients de la fonction objectif et les contraintes,
+        puis le programme calcule la solution optimale et affiche la région réalisable.
+
+    params:
+        parent : Widget parent dans lequel ce frame est inséré.
+
+    return:
+        Aucun (composant graphique interactif).
+    """
+
     def __init__(self, parent):
+        """Initialise l’interface utilisateur avec les champs de saisie et la zone graphique."""
         super().__init__(parent)
 
-        # --- Partie gauche : saisie ---
+        # --- Partie gauche : zone de saisie des données ---
         left = ctk.CTkFrame(self, width=320)
         left.pack(side="left", fill="y", padx=12, pady=12)
 
@@ -29,12 +44,24 @@ class LinearProgrammingFrame(ctk.CTkFrame):
         self.result_label = ctk.CTkLabel(left, text="Solution : -")
         self.result_label.pack(pady=6)
 
-        # --- Partie droite : graphique ---
+        # --- Partie droite : affichage graphique du domaine réalisable ---
         self.fig, self.ax = plt.subplots(figsize=(4.5, 4))
         self.canvas = FigureCanvasTkAgg(self.fig, master=self)
         self.canvas.get_tk_widget().pack(side="right", fill="both", expand=True, padx=12, pady=12)
 
     def solve(self):
+        """
+        desc:
+            Lit les coefficients saisis, construit le problème de programmation linéaire,
+            appelle `solve_lp()` pour obtenir la solution optimale, et affiche le résultat.  
+            Si le problème a deux variables, la région réalisable est tracée.
+
+        params:
+            Aucun (utilise les champs de saisie de l’interface).
+
+        return:
+            Aucun (met à jour les labels et le graphique dans l’interface).
+        """
         try:
             # Lecture des coefficients
             c = [float(v.strip()) for v in self.c_entry.get().split(',')]
@@ -60,6 +87,19 @@ class LinearProgrammingFrame(ctk.CTkFrame):
             self.result_label.configure(text=f"Erreur: {e}")
 
     def plot_feasible_region(self, A, b, sol):
+        """
+        desc:
+            Trace la région réalisable et les droites de contraintes pour un problème à deux variables.
+            Met également en évidence le point optimal trouvé.
+
+        params:
+            A : Liste des coefficients des contraintes (forme [[a1,a2], ...])  
+            b : Liste des bornes supérieures correspondantes  
+            sol : Dictionnaire contenant les valeurs optimales des variables
+
+        return:
+            Aucun (met à jour le graphique affiché dans l’interface).
+        """
         self.ax.clear()
 
         x = np.linspace(0, 10, 200)
@@ -73,7 +113,7 @@ class LinearProgrammingFrame(ctk.CTkFrame):
         self.ax.set_ylabel("x₂")
         self.ax.grid(True, linestyle="--", alpha=0.4)
 
-        # Afficher point optimal
+        # Afficher le point optimal
         if "x0" in sol and "x1" in sol:
             self.ax.scatter(sol["x0"], sol["x1"], color="red", s=80, label="Point optimal")
             self.ax.text(sol["x0"] + 0.2, sol["x1"], "Optimum", color="red")

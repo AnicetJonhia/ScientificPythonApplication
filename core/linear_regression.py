@@ -9,6 +9,24 @@ except Exception:
 
 
 def fit_linear_regression(x, y):
+
+    """
+    desc:
+        Ajuste un modèle de régression linéaire simple (y = a*x + b) 
+        à partir des données fournies.  
+        Utilise scikit-learn si disponible, sinon un fallback basé sur numpy.polyfit.
+
+    params:
+        x : Liste ou tableau numpy contenant les valeurs des variables indépendantes.
+        y : Liste ou tableau numpy contenant les valeurs des variables dépendantes (cibles).
+
+    return:
+        Un tuple contenant :
+            - coef : Coefficient directeur (pente) de la droite de régression.
+            - intercept : Ordonnée à l’origine (biais) de la droite.
+            - predict_fn : Fonction permettant de prédire les valeurs de y à partir de nouvelles valeurs de x.
+    """
+
     x = np.array(x, dtype=float)
     y = np.array(y, dtype=float)
     x_flat = x.reshape(-1, 1)
