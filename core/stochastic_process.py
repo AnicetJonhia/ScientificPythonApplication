@@ -1,7 +1,7 @@
 
 import numpy as np
 
-def simulate_markov_chain(P, initial_state=0, steps=100):
+def simulate_markov_chain(P, initial_state=0, steps=100, rng=None):
     """
     desc:
         Simule une chaîne de Markov discrète à partir d'une matrice de transition donnée.  
@@ -20,9 +20,12 @@ def simulate_markov_chain(P, initial_state=0, steps=100):
     n = P.shape[0]
     state = int(initial_state)
     states = [state]
+    # use provided RNG (numpy RandomState/Generator) if given for reproducibility
+    if rng is None:
+        rng = np.random
     for _ in range(steps):
         probs = P[state]
-        state = np.random.choice(n, p=probs)
+        state = rng.choice(n, p=probs)
         states.append(state)
     return states
 

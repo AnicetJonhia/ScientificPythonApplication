@@ -1,6 +1,7 @@
 numpy
 matplotlib
-customtkinter
 scikit-learn
 pandas
 pulp
+streamlit
+plotly
