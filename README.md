@@ -12,7 +12,7 @@ Le code est organisé en :
 - `core/` : implémentations algorithmiques et fonctions de calcul
 - `ui/` : modules Streamlit (une page par fonctionnalité)
 - `datas/` : jeux de données et captures d'écran
-- `docs/` : documentation supplémentaire
+
 
 ---
 
@@ -75,9 +75,6 @@ python -m pip install -r requirements.txt
 python main.py
 ```
 
-> Si l'exécution des scripts est bloquée, exécutez PowerShell en tant qu'administrateur et exécutez:
->
-> `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
 
 ### Lancer Streamlit directement (optionnel)
 
