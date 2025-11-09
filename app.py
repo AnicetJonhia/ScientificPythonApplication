@@ -11,13 +11,16 @@ from ui.linear_regression import render as render_regression
 from ui.stochastic import render as render_stochastic
 
 
-st.set_page_config(page_title="Math Solver App", layout="wide")
+
+APP_TITLE = "Application graphique de résolution et de modélisation mathématique"
+st.set_page_config(page_title=APP_TITLE, layout="wide")
+st.title(APP_TITLE)
 
 # Sidebar styled menu using streamlit-option-menu for a button-like web menu
 if _HAS_OPTION_MENU:
     with st.sidebar:
         selected = option_menu(
-            menu_title="Math Solver App",
+            menu_title="Menu",
             options=["Systèmes linéaires", "Programmation linéaire", "Régression linéaire", "Processus stochastiques"],
             icons=["gear", "graph-up", "graph-up-arrow", "dice-5"],
             menu_icon="app-indicator",
@@ -26,6 +29,7 @@ if _HAS_OPTION_MENU:
         )
 else:
     with st.sidebar:
+        st.sidebar.title("Menu")
         selected = st.radio("Navigation", ("🧮  Systèmes linéaires", "📈  Programmation linéaire", "📉  Régression linéaire", "🎲  Processus stochastiques"))
         # normalize to same labels as option_menu
         if isinstance(selected, str) and selected.startswith('🧮'):
