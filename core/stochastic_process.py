@@ -48,3 +48,35 @@ def empirical_distribution(states, n_states=None):
         n_states = states.max() + 1
     counts = np.bincount(states, minlength=n_states)
     return counts / counts.sum()
+
+
+def stationary_distribution(P, tol=1e-8, maxiter=10000):
+    """
+    Estimate the stationary distribution of a Markov chain with transition matrix P.
+
+    Tries eigenvector method on P.T; falls back to power iteration.
+
+    Returns a probability vector summing to 1.
+    """
+    P = np.array(P, dtype=float)
+    # try eigenvector of transpose
+    try:
+        vals, vecs = np.linalg.eig(P.T)
+        # find eigenvalue close to 1
+        idx = np.argmin(np.abs(vals - 1.0))
+        v = np.real(vecs[:, idx])
+        if np.allclose(v, 0):
+            raise Exception("Eigenvector nul")
+        v = np.abs(v)
+        v = v / v.sum()
+        return v
+    except Exception:
+        # power iteration
+        n = P.shape[0]
+        pi = np.ones(n) / n
+        for _ in range(maxiter):
+            pi_next = pi @ P
+            if np.linalg.norm(pi_next - pi, ord=1) < tol:
+                return pi_next / pi_next.sum()
+            pi = pi_next
+        return pi / pi.sum()

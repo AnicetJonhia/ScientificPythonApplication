@@ -10,11 +10,17 @@ def render():
     st.header("Programmation linéaire")
 
     c_text = st.text_input("Coefficients de la fonction objectif (c1,c2)", value="3,2")
+    sense = st.radio("Objectif", options=["Maximiser", "Minimiser"], index=0)
+
     constraints_text = st.text_area(
         "Contraintes (une par ligne, format: a1,a2<=b). Exemple: 1,0<=4",
         value="1,0<=4\n0,1<=3\n1,1<=5",
         height=150,
     )
+    non_negative = st.checkbox("Variables non négatives (x >= 0)", value=True)
+
+    bounds_text = st.text_area("(Optionnel) Bornes des variables, une par ligne 'low,up' ou 'None' pour illimité",
+                               value="", height=80)
 
     if st.button("Résoudre"):
         try:
@@ -30,7 +36,27 @@ def render():
                 else:
                     raise ValueError("Contrainte mal formatée (utiliser <=)")
 
-            sol, opt = solve_lp(c, A, b, maximize=True)
+            maximize = True if sense == "Maximiser" else False
+            # parse bounds if provided
+            bounds = None
+            if bounds_text.strip():
+                lines = [ln.strip() for ln in bounds_text.splitlines() if ln.strip()]
+                if len(lines) != len(c):
+                    raise ValueError("Fournir une borne par variable (même nombre que d'éléments de c).")
+                bounds = []
+                for ln in lines:
+                    if ln.lower() == 'none':
+                        bounds.append((None, None))
+                    else:
+                        parts = [p.strip() for p in ln.split(',')]
+                        low = None if parts[0].lower() == 'none' else float(parts[0])
+                        up = None if parts[1].lower() == 'none' else float(parts[1])
+                        bounds.append((low, up))
+
+            if non_negative and bounds is None:
+                bounds = None  # leave default behavior in core (non-negative)
+
+            sol, opt = solve_lp(c, A, b, maximize=maximize, bounds=bounds)
             st.success(f"Solution: {sol} | Opt = {opt:.4f}")
 
             if len(c) == 2:

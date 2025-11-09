@@ -8,9 +8,11 @@ from core.linear_system import solve_linear_system
 
 def render():
     st.header("Systèmes linéaires")
-
     a_text = st.text_area("Entrer la matrice A (ex: [[2,1],[1,3]])", value="[[2,1],[1,3]]", height=120)
     b_text = st.text_input("Entrer le vecteur b (ex: [8,13])", value="[8,13]")
+
+    method = st.selectbox("Méthode de résolution", options=['auto', 'direct', 'gauss', 'lu', 'lstsq'], index=0)
+    show_decomposition = st.checkbox("Afficher décomposition LU (si utilisée)", value=True)
 
     if st.button("Résoudre"):
         try:
@@ -23,11 +25,25 @@ def render():
             return
 
         try:
-            x = solve_linear_system(A, b)
+            x = solve_linear_system(A, b, method=method)
             st.success(f"Solution : {np.round(x,6)}")
         except Exception as e:
             st.error(f"Erreur calcul : {e}")
             return
+
+        # Show LU if requested and possible
+        if method == 'lu' or (method == 'auto' and A.shape[0] <= 6):
+            try:
+                from core.linear_system import lu_decompose
+                L, U = lu_decompose(A)
+                if show_decomposition:
+                    st.subheader('L (inférieure)')
+                    st.write(L)
+                    st.subheader('U (supérieure)')
+                    st.write(U)
+            except Exception:
+                # decomposition may fail if pivoting is needed
+                pass
 
         # Plot if 2x2 using Plotly
         if A.shape[0] == 2 and A.shape[1] == 2:

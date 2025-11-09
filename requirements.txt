@@ -5,3 +5,4 @@ pandas
 pulp
 streamlit
 plotly
+streamlit-option-menu

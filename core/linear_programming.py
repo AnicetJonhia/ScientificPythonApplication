@@ -6,7 +6,7 @@ except Exception:
     pulp = None
 
 
-def solve_lp(c: List[float], A: List[List[float]], b: List[float], maximize=True) -> Tuple[dict, float]:
+def solve_lp(c: List[float], A: List[List[float]], b: List[float], maximize=True, bounds=None, signs=None) -> Tuple[dict, float]:
 
 
     """
@@ -42,15 +42,42 @@ def solve_lp(c: List[float], A: List[List[float]], b: List[float], maximize=True
         raise ValueError("La longueur de b doit correspondre au nombre de contraintes (lignes de A).")
 
     prob = pulp.LpProblem("LP_problem", pulp.LpMaximize if maximize else pulp.LpMinimize)
-    # variables non négatives par défaut
-    vars = [pulp.LpVariable(f"x{i}", lowBound=0) for i in range(n)]
+    # variables non négatives par défaut sauf si bounds fournis
+    vars = []
+    if bounds is None:
+        for i in range(n):
+            vars.append(pulp.LpVariable(f"x{i}", lowBound=0))
+    else:
+        # bounds should be a list of (low, up) pairs where None means unbounded
+        if len(bounds) != n:
+            raise ValueError("La longueur de bounds doit être égale à la longueur de c.")
+        for i, bnd in enumerate(bounds):
+            low, up = None, None
+            if bnd is not None:
+                low, up = bnd
+            if low is None and up is None:
+                vars.append(pulp.LpVariable(f"x{i}"))
+            else:
+                vars.append(pulp.LpVariable(f"x{i}", lowBound=low, upBound=up))
 
     # objectif
     prob += pulp.lpDot(c, vars)
 
-    # contraintes Ax <= b
-    for row, bi in zip(A, b):
-        prob += pulp.lpDot(row, vars) <= bi
+    # contraintes Ax <= b by default; allow signs list
+    if signs is None:
+        signs = ['<='] * len(b)
+    if len(signs) != len(b):
+        raise ValueError("La longueur de signs doit correspondre au nombre de contraintes (b).")
+
+    for row, bi, s in zip(A, b, signs):
+        if s == '<=':
+            prob += pulp.lpDot(row, vars) <= bi
+        elif s == '>=':
+            prob += pulp.lpDot(row, vars) >= bi
+        elif s == '==':
+            prob += pulp.lpDot(row, vars) == bi
+        else:
+            raise ValueError(f"Opérateur de contrainte inconnu: {s}. Utiliser '<=', '>=', '=='.")
 
     status = prob.solve()
 
